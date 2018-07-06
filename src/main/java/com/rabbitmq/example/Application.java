@@ -14,7 +14,12 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class Application {
-
+/*
+You’ll use RabbitTemplate to send messages,
+and you will register a Receiver with the message listener
+container to receive messages.
+The connection factory drives both, allowing them to connect to the RabbitMQ server.
+ */
     public static final String topicExchangeName = "spring-boot-exchange";
 
     public static final String queueName = "spring-boot";
@@ -26,7 +31,7 @@ public class Application {
 
     @Bean
     Queue queue() {
-        return new Queue(queueName, false);
+        return new Queue(queueName, true);
     }
 
     @Bean
@@ -43,7 +48,13 @@ public class Application {
         container.setMessageListener(listenerAdapter);
         return container;
     }
-
+    /*
+        The bean defined in the listenerAdapter() method is registered as a message
+        listener in the container defined in container().
+        It will listen for messages on the "spring-boot" queue.
+        Because the Receiver class is a POJO, it needs to be wrapped in the
+        MessageListenerAdapter, where you specify it to invoke receiveMessage.
+         */
     @Bean
     MessageListenerAdapter listenerAdapter(Consumer consumer) {
         return new MessageListenerAdapter(consumer, "receiveMessage");
